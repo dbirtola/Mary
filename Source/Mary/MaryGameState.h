@@ -48,7 +48,6 @@ public:
 	FGameTimer ActiveTimer;
 
 	void StartSegment(EGameSegment Segment);
-
 	void EndSegment();
 
 	FGameTimer StartTimer(float Time, FSimpleDelegate& Delegate);
