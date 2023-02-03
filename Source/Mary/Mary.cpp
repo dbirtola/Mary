@@ -4,4 +4,6 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Mary, "Mary" );
+
+DEFINE_LOG_CATEGORY(LogMary);
  
