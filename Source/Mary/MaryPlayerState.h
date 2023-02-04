@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "MaryPlayerState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatsUpdated, const TArray<FPlayerStat>&, Stats);
 
 UCLASS(config=Game)
 class AMaryPlayerState : public APlayerState
@@ -15,11 +16,18 @@ class AMaryPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+
 	AMaryPlayerState();
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	UPROPERTY(Replicated)
+	UFUNCTION()
+	void OnRep_Stats();
+
+	UPROPERTY(ReplicatedUsing=OnRep_Stats)
 	TArray<FPlayerStat> Stats;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStatsUpdated OnStatsUpdated;
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
 	void AddPlayerStat(FGameplayTag StatTag, float Value);

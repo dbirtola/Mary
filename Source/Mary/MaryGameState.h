@@ -32,6 +32,9 @@ public:
 	float InitialDuration = 0.0f;
 };
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSegmentUpdated, TEnumAsByte<EGameSegment>, NewSegment)
+
 UCLASS(minimalapi)
 class AMaryGameState : public AGameStateBase
 {
@@ -41,7 +44,13 @@ public:
 	AMaryGameState();
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UFUNCTION()
+	void OnRep_CurrentSegment();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSegmentUpdated OnSegmentUpdated;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_CurrentSegment)
 	TEnumAsByte<EGameSegment> CurrentSegment;
 
 	UPROPERTY(BlueprintReadOnly, Replicated)

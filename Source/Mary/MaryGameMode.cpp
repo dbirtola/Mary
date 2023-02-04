@@ -75,6 +75,5 @@ void AMaryGameMode::OnPostGameFinished()
 	// TODO: Should be able to reset level without losing our game mode using ResetLevel() or some functionality from AGameModeBase. Just doing this now to keep things simple.
 	// Also because we do want to make sure we can manually restart these levels in case bugs happen
 	GetMaryGameState()->StartSegment(Restarting);
-	GetMaryGameState()->ForceNetUpdate();
 	GetWorld()->ServerTravel("?Restart");
 }

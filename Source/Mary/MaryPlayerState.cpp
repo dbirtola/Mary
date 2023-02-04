@@ -15,6 +15,11 @@ void AMaryPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AMaryPlayerState, Stats);
 }
 
+void AMaryPlayerState::OnRep_Stats()
+{
+	OnStatsUpdated.Broadcast(Stats);
+}
+
 void AMaryPlayerState::AddPlayerStat(FGameplayTag StatTag, float Value)
 {
 	FPlayerStat* Stat = Stats.FindByPredicate([StatTag](const FPlayerStat& ExistingStat) { return ExistingStat.Tag == StatTag; });
@@ -26,6 +31,8 @@ void AMaryPlayerState::AddPlayerStat(FGameplayTag StatTag, float Value)
 	{
 		Stats.Add(FPlayerStat({ StatTag, Value }));
 	}
+
+	OnStatsUpdated.Broadcast(Stats);
 }
 
 void AMaryPlayerState::SetPlayerStat(FGameplayTag StatTag, float Value)
@@ -39,6 +46,8 @@ void AMaryPlayerState::SetPlayerStat(FGameplayTag StatTag, float Value)
 	{
 		Stats.Add(FPlayerStat({ StatTag, Value }));
 	}
+
+	OnStatsUpdated.Broadcast(Stats);
 }
 
 TArray<FPlayerStat> AMaryPlayerState::GetStats() const

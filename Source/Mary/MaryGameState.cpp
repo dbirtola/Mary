@@ -19,9 +19,15 @@ void AMaryGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AMaryGameState, ActiveTimer);
 }
 
+void AMaryGameState::OnRep_CurrentSegment()
+{
+	OnSegmentUpdated.Broadcast(CurrentSegment);
+}
+
 void AMaryGameState::StartSegment(EGameSegment Segment)
 {
 	CurrentSegment = Segment;
+	OnSegmentUpdated.Broadcast(Segment);
 }
 
 void AMaryGameState::EndSegment()
