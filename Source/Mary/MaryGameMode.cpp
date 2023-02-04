@@ -14,6 +14,8 @@ AMaryGameMode::AMaryGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	bUseSeamlessTravel = true;
 }
 
 AMaryGameState* AMaryGameMode::GetMaryGameState() const
