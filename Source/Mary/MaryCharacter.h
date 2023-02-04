@@ -7,6 +7,13 @@
 #include "InputActionValue.h"
 #include "MaryCharacter.generated.h"
 
+UENUM()
+enum CharacterState
+{
+	Walking,
+	Dashing,
+	Stunned
+};
 
 UCLASS(config=Game)
 class AMaryCharacter : public ACharacter
@@ -39,15 +46,45 @@ class AMaryCharacter : public ACharacter
 
 public:
 	AMaryCharacter();
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	
+	void ChangeState(CharacterState NewState);
+	CharacterState GetCharacterState() const { return CurrentState; }
 
 protected:
+
+	UFUNCTION(Server, Reliable)
+	void ServerChangeState(CharacterState NewState);
+
+	UFUNCTION()
+	void OnRep_CurrentState();
+	
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentState, BlueprintReadOnly, Category="State")
+	TEnumAsByte<CharacterState> CurrentState;
+
+	FVector ForwardDirection;
+	FVector RightDirection;
+
+	FVector2D MovementVector;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	void Jump() override;
+
+	void Startwalking();
+	void TickWalking(float DeltaSeconds);
+
+	void StartDashing();
+	void TickDashing(float DeltaSeconds);
+
+	void StartStunned();
+	void TickStunned(float DeltaSeconds);
 			
 
 protected:
