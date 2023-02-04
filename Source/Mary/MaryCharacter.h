@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "AbilitySystemInterface.h"
 #include "MaryCharacter.generated.h"
 
+class UAbilitySystemComponent;
 
-UCLASS(config=Game)
-class AMaryCharacter : public ACharacter
+UCLASS(config = Game)
+class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +42,7 @@ class AMaryCharacter : public ACharacter
 public:
 	AMaryCharacter();
 	
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
 
@@ -56,6 +59,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+
 
 public:
 	/** Returns CameraBoom subobject **/
