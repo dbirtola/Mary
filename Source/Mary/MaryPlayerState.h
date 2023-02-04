@@ -6,19 +6,26 @@
 #include "GameFramework/PlayerState.h"
 #include "PlayerStats.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystemInterface.h"
 #include "MaryPlayerState.generated.h"
+
+class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatsUpdated, const TArray<FPlayerStat>&, Stats);
 
 UCLASS(config=Game)
-class AMaryPlayerState : public APlayerState
+class AMaryPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	UAbilitySystemComponent* AbilitySystemComponent;
 
 public:
 
 	AMaryPlayerState();
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UFUNCTION()
 	void OnRep_Stats();

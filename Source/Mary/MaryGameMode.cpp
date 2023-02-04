@@ -5,7 +5,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "MaryGameState.h"
 #include "Engine/World.h"
-
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
 AMaryGameMode::AMaryGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -78,4 +79,12 @@ void AMaryGameMode::OnPostGameFinished()
 	// Also because we do want to make sure we can manually restart these levels in case bugs happen
 	GetMaryGameState()->StartSegment(Restarting);
 	GetWorld()->ServerTravel("?Restart");
+}
+
+void AMaryGameMode::SetPlayerName(APlayerController* Controller, const FString& Name) const
+{
+	if (Controller && Controller->PlayerState)
+	{
+		Controller->PlayerState->SetPlayerName(Name);
+	}
 }

@@ -2,10 +2,12 @@
 
 #include "MaryPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "AbilitySystemComponent.h"
 #include "PlayerStats.h"
 
 AMaryPlayerState::AMaryPlayerState()
 {
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 }
 
 void AMaryPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -13,6 +15,11 @@ void AMaryPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMaryPlayerState, Stats);
+}
+
+UAbilitySystemComponent* AMaryPlayerState::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AMaryPlayerState::OnRep_Stats()
