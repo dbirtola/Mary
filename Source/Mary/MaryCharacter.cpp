@@ -1,5 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#include <Kismet/GameplayStatics.h>
+#include <Camera/CameraActor.h>
+
 #include "MaryCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -64,6 +67,10 @@ void AMaryCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+
+		const auto& OverheadCamera = UGameplayStatics::GetActorOfClass(GetWorld(), ACameraActor::StaticClass());
+
+		PlayerController->SetViewTarget(OverheadCamera);
 	}
 }
 
