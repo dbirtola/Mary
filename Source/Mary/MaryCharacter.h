@@ -40,7 +40,7 @@ class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
 	class UInputAction* LookAction;
 
 public:
-	AMaryCharacter();
+	AMaryCharacter(const FObjectInitializer& ObjectInitializer);
 	
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

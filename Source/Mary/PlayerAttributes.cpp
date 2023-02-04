@@ -1,7 +1,7 @@
 
 
 #include "PlayerAttributes.h"
-#include "../../../../../../HomeUE/Engine/Source/Runtime/Engine/Public/Net/UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 void UPlayerAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
