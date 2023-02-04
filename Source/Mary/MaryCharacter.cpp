@@ -84,7 +84,7 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Move);
 
 		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Look);
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Look);
 
 	}
 
