@@ -41,7 +41,8 @@ public:
 	UFUNCTION()
 	void OnPostGameFinished();
 
-
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerName(APlayerController* Controller, const FString& Name) const;
 };
 
 
