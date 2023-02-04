@@ -12,12 +12,14 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerController.h"
 #include "MaryPlayerState.h"
+#include "MaryCharacterMovementComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 // AMaryCharacter
 
-AMaryCharacter::AMaryCharacter()
+AMaryCharacter::AMaryCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMaryCharacterMovementComponent>(TEXT("CharMoveComp")))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
