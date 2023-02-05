@@ -164,7 +164,8 @@ void AMaryCharacter::Interact_Implementation()
 		{
 			if(IsValid(HoveredCollectible) && HoveredCollectible->TryPickup())
 			{
-				HoveredCollectible->AttachToActor(this,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+				//HoveredCollectible->AttachToActor(this,FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HeadSocket");
+				AttachFlower(HoveredCollectible);
 				HeldCollectibles.Add(HoveredCollectible);
 				break;
 			}
