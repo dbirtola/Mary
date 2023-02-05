@@ -66,6 +66,9 @@ public:
 	void ChangeState(CharacterState NewState);
 	CharacterState GetCharacterState() const { return CurrentState; }
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void AttachFlower(AMaryCollectible* Collectible);
+
 protected:
 
 	UFUNCTION(Server, Reliable)
