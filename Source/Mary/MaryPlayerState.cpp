@@ -5,11 +5,13 @@
 #include "AbilitySystemComponent.h"
 #include "PlayerStats.h"
 #include "MaryCharacter.h"
+#include "PlayerAttributes.h"
 
 AMaryPlayerState::AMaryPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->AddAttributeSetSubobject(CreateDefaultSubobject<UPlayerAttributes>(TEXT("Attribute")));
 	FOnPlayerStatePawnSet::FDelegate Delegate;
 	Delegate.BindUFunction(this, FName("PawnSet"));
 	OnPawnSet.Add(Delegate);

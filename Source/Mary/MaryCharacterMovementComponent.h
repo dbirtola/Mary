@@ -19,4 +19,8 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnBumped OnPawnBumped;
+
+
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };
