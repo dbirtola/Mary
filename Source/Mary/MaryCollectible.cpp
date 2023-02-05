@@ -77,7 +77,7 @@ bool AMaryCollectible::CanUse() const
 
 bool AMaryCollectible::TryUse(UAbilitySystemComponent* AbilitySystemComponent)
 {
-	if(RemainingUses > 1)
+	if(RemainingUses > 0)
 	{
 		for(TSubclassOf<UGameplayAbility> const FlowerAbility : FlowerAbilities)
 		{
