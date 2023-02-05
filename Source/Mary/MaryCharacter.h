@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "MaryCharacter.generated.h"
 
 class UAbilitySystemComponent;
@@ -44,6 +45,15 @@ public:
 	
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+
+	UFUNCTION()
+	void OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks);
+
+	void PawnClientRestart() override;
+
+
+	void PossessedBy(AController* NewController) override;
+
 protected:
 
 	/** Called for movement input */
@@ -67,5 +77,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
 };
 

@@ -47,5 +47,12 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float GetStat(FGameplayTag StatTag) const;
+
+
+	UFUNCTION()
+	void OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks);
+protected:
+	void BeginPlay() override;
+
 };
 

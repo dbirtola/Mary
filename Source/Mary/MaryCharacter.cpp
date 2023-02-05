@@ -13,6 +13,8 @@
 #include "GameFramework/PlayerController.h"
 #include "MaryPlayerState.h"
 #include "MaryCharacterMovementComponent.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,6 +54,38 @@ UAbilitySystemComponent* AMaryCharacter::GetAbilitySystemComponent() const
 		return MaryPS->GetAbilitySystemComponent();
 	}
 	return nullptr;
+}
+
+void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
+{
+	//Assumes dazed tag atm lol
+	if (Tag == FGameplayTag::RequestGameplayTag("Effects.Daze"))
+	{
+		if (Stacks > 0)
+		{
+			GetCharacterMovement()->DisableMovement();
+		}
+
+		if (Stacks <= 0)
+		{
+			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		}
+	}
+}
+
+void AMaryCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+}
+
+void AMaryCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (GetAbilitySystemComponent())
+	{
+		GetAbilitySystemComponent()->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effects.Daze")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AMaryCharacter::OnTagNewOrRemoved);
+	}
 }
 
 void AMaryCharacter::BeginPlay()
