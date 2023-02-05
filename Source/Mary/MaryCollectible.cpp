@@ -4,6 +4,7 @@
 #include "MaryCollectible.h"
 
 #include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 UStaticMesh* AMaryCollectible::DefaultGrownMesh = nullptr;
@@ -150,5 +151,14 @@ bool AMaryCollectible::BloomFlower()
 		return false;
 	}
 	return true;
+}
+
+void AMaryCollectible::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMaryCollectible, CollectibleState);
+	DOREPLIFETIME(AMaryCollectible, PointValue);
+	DOREPLIFETIME(AMaryCollectible, RemainingUses);
 }
 

@@ -31,13 +31,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, Category = "Collectible")
+	UPROPERTY(VisibleAnywhere, Category = "Collectible", Replicated)
 	TEnumAsByte<FMaryCollectibleState> CollectibleState = FMaryCollectibleState::Growing;
 	
-	UPROPERTY(EditAnywhere, Category = "Collectible")
+	UPROPERTY(EditAnywhere, Category = "Collectible", Replicated)
 	int PointValue = 1;
 
-	UPROPERTY(EditAnywhere, Category = "Collectible")
+	UPROPERTY(EditAnywhere, Category = "Collectible", Replicated)
 	int RemainingUses = 0;
 	
 public:
@@ -78,4 +78,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool BloomFlower();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
