@@ -72,3 +72,10 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+.idea/.idea.Mary/.idea/indexLayout.xml
+.idea/.idea.Mary/.idea/aws.xml
+.idea/.idea.Mary/.idea/workspace.xml
+.idea/.idea.Mary/.idea/vcs.xml
+Content/StarterContent/Architecture/Floor_400x400.uasset
+Content/StarterContent/Audio/Collapse01.uasset
+Content/StarterContent/Architecture/Floor_400x400.uasset
