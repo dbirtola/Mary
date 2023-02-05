@@ -176,7 +176,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
-
+		//const FRotator Rotation = GetActorRotation();
 		bool attributeSuccess;
 		const FRotator YawRotation(0, Rotation.Yaw + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess), 0);
 
