@@ -16,13 +16,13 @@ AMaryCollectible::AMaryCollectible()
 
 	if(DefaultGrownMesh == nullptr)
 	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Meshes/SM_Flower_Temp.SM_Flower_Temp"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Environment/Basic_Flower/prop_flower_sacs.prop_flower_sacs"));
 		DefaultGrownMesh = StaticAsset.Object;
 	}
 
 	if(GrowingMesh == nullptr)
 	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Meshes/SM_Sprout_Temp.SM_Sprout_Temp"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Environment/Sprout/prop_sprout.prop_sprout"));
 		GrowingMesh = StaticAsset.Object;
 	}
 	
