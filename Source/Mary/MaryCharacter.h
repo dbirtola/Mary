@@ -49,11 +49,6 @@ public:
 	UFUNCTION()
 	void OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks);
 
-	void PawnClientRestart() override;
-
-
-	void PossessedBy(AController* NewController) override;
-
 protected:
 
 	/** Called for movement input */

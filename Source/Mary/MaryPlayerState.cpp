@@ -9,6 +9,15 @@
 AMaryPlayerState::AMaryPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	FOnPlayerStatePawnSet::FDelegate Delegate;
+	Delegate.BindUFunction(this, FName("PawnSet"));
+	OnPawnSet.Add(Delegate);
+}
+
+void AMaryPlayerState::PawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
+{
+	AbilitySystemComponent->SetAvatarActor(NewPawn);
 }
 
 void AMaryPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

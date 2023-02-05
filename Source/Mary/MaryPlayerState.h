@@ -18,8 +18,6 @@ class AMaryPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent;
 
 public:
 
@@ -27,8 +25,14 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UAbilitySystemComponent* AbilitySystemComponent;
+
 	UFUNCTION()
 	void OnRep_Stats();
+
+	UFUNCTION()
+	void PawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 
 	UPROPERTY(ReplicatedUsing=OnRep_Stats)
 	TArray<FPlayerStat> Stats;

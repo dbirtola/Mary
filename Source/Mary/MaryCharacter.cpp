@@ -58,7 +58,6 @@ UAbilitySystemComponent* AMaryCharacter::GetAbilitySystemComponent() const
 
 void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 {
-	//Assumes dazed tag atm lol
 	if (Tag == FGameplayTag::RequestGameplayTag("Effects.Daze"))
 	{
 		if (Stacks > 0)
@@ -70,21 +69,6 @@ void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 		{
 			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 		}
-	}
-}
-
-void AMaryCharacter::PawnClientRestart()
-{
-	Super::PawnClientRestart();
-
-}
-
-void AMaryCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-	if (GetAbilitySystemComponent())
-	{
-		GetAbilitySystemComponent()->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effects.Daze")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AMaryCharacter::OnTagNewOrRemoved);
 	}
 }
 
