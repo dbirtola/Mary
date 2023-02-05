@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MaryCharacter.h"
+
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -13,11 +15,11 @@
 #include "GameFramework/PlayerController.h"
 #include "MaryPlayerState.h"
 #include "MaryCharacterMovementComponent.h"
+#include "PlayerAttributes.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "Net/UnrealNetwork.h"
 
-//////////////////////////////////////////////////////////////////////////
 // AMaryCharacter
 
 AMaryCharacter::AMaryCharacter(const FObjectInitializer& ObjectInitializer)
@@ -173,8 +175,10 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();// + FRotator(0, 90, 0);
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FRotator Rotation = Controller->GetControlRotation();
+
+		bool attributeSuccess;
+		const FRotator YawRotation(0, Rotation.Yaw + 90 + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess), 0);
 
 		// get forward vector
 		ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
