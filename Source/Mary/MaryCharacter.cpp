@@ -177,12 +177,28 @@ void AMaryCharacter::Interact_Implementation()
 		{
 			if(IsValid(HeldCollectible))
 			{
+				if (GetAbilitySystemComponent())
+				{
+					if (GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Effects.InFountain"))))
+					{
+						HeldCollectible->TryDrop();
+						//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
+						HeldCollectibles.Remove(HeldCollectible);
+
+						if (HasAuthority())
+						{
+							if (AMaryPlayerState* MaryPlayerState = GetPlayerState<AMaryPlayerState>())
+							{
+								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stat.Points")));
+							}
+						}
+					}
+				}
+
 				bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
 				if(!bUsed)
 				{
-					HeldCollectible->TryDrop();
-					//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
-					HeldCollectibles.Remove(HeldCollectible);
+
 				}
 				break;
 			}
