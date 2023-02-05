@@ -35,7 +35,7 @@ protected:
 	TEnumAsByte<FMaryCollectibleState> CollectibleState = FMaryCollectibleState::Growing;
 	
 	UPROPERTY(EditAnywhere, Category = "Collectible")
-	int PointValue;
+	int PointValue = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Collectible")
 	int RemainingUses = 1;

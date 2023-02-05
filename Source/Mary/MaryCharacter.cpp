@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MaryCharacter.h"
+
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -13,11 +15,11 @@
 #include "GameFramework/PlayerController.h"
 #include "MaryPlayerState.h"
 #include "MaryCharacterMovementComponent.h"
+#include "PlayerAttributes.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
+#include "Net/UnrealNetwork.h"
 
-
-//////////////////////////////////////////////////////////////////////////
 // AMaryCharacter
 
 AMaryCharacter::AMaryCharacter(const FObjectInitializer& ObjectInitializer)
@@ -58,7 +60,6 @@ UAbilitySystemComponent* AMaryCharacter::GetAbilitySystemComponent() const
 
 void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 {
-	//Assumes dazed tag atm lol
 	if (Tag == FGameplayTag::RequestGameplayTag("Effects.Daze"))
 	{
 		if (Stacks > 0)
@@ -73,25 +74,65 @@ void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 	}
 }
 
-void AMaryCharacter::PawnClientRestart()
+void AMaryCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::PawnClientRestart();
-
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMaryCharacter, CurrentState);
 }
 
-void AMaryCharacter::PossessedBy(AController* NewController)
+void AMaryCharacter::Tick(float DeltaSeconds)
 {
-	Super::PossessedBy(NewController);
-	if (GetAbilitySystemComponent())
+	Super::Tick(DeltaSeconds);
+
+	if(CurrentState == Walking)
 	{
-		GetAbilitySystemComponent()->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effects.Daze")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AMaryCharacter::OnTagNewOrRemoved);
+		TickWalking(DeltaSeconds);
+	}
+
+	if(CurrentState == Dashing)
+	{
+		TickDashing(DeltaSeconds);
+	}
+
+	if(CurrentState == Stunned)
+	{
+		TickStunned(DeltaSeconds);
 	}
 }
+
+void AMaryCharacter::ChangeState(CharacterState NewState)
+{
+	if(GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		return;
+	}
+	
+	if(CurrentState == NewState)
+	{
+		return;
+	}
+	CurrentState = NewState;
+	
+	
+	ServerChangeState(NewState);
+}
+
+void AMaryCharacter::OnRep_CurrentState()
+{
+	
+}
+
+void AMaryCharacter::ServerChangeState_Implementation(CharacterState NewState)
+{
+	CurrentState = NewState;
+}
+
 
 void AMaryCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	bReplicates = true;
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -103,8 +144,13 @@ void AMaryCharacter::BeginPlay()
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void AMaryCharacter::Interact()
+{
+	if(IsValid(HoveredCollectible))
+	{
+		
+	}
+}
 
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -112,11 +158,14 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Jump);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Move);
+
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Interact);
 	}
 
 }
@@ -124,22 +173,48 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 void AMaryCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		//const FRotator Rotation = GetActorRotation();
+		bool attributeSuccess;
+		const FRotator YawRotation(
+			0,
+			Rotation.Yaw + 90 + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess),
+			0
+			);
+
 
 		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
 		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	}
+}
+
+void AMaryCharacter::Jump()
+{
+	//ChangeState(Stunned);
+}
+
+void AMaryCharacter::TickWalking(float DeltaSeconds)
+{
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
+
+	MovementVector = FVector2D::ZeroVector;
+}
+
+void AMaryCharacter::TickDashing(float DeltaSeconds)
+{
+}
+
+void AMaryCharacter::TickStunned(float DeltaSeconds)
+{
+	
 }
