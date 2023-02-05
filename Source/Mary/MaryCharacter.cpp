@@ -178,7 +178,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 		const FRotator Rotation = Controller->GetControlRotation();
 
 		bool attributeSuccess;
-		const FRotator YawRotation(0, Rotation.Yaw + 90 + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess), 0);
+		const FRotator YawRotation(0, Rotation.Yaw + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess), 0);
 
 		// get forward vector
 		ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
