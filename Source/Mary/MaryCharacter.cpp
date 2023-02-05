@@ -15,7 +15,7 @@
 #include "MaryCharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
-
+#include "Net/UnrealNetwork.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMaryCharacter
@@ -72,10 +72,65 @@ void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 	}
 }
 
+void AMaryCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMaryCharacter, CurrentState);
+}
+
+void AMaryCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(CurrentState == Walking)
+	{
+		TickWalking(DeltaSeconds);
+	}
+
+	if(CurrentState == Dashing)
+	{
+		TickDashing(DeltaSeconds);
+	}
+
+	if(CurrentState == Stunned)
+	{
+		TickStunned(DeltaSeconds);
+	}
+}
+
+void AMaryCharacter::ChangeState(CharacterState NewState)
+{
+	if(GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		return;
+	}
+	
+	if(CurrentState == NewState)
+	{
+		return;
+	}
+	CurrentState = NewState;
+	
+	
+	ServerChangeState(NewState);
+}
+
+void AMaryCharacter::OnRep_CurrentState()
+{
+	
+}
+
+void AMaryCharacter::ServerChangeState_Implementation(CharacterState NewState)
+{
+	CurrentState = NewState;
+}
+
+
 void AMaryCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	bReplicates = true;
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -87,8 +142,13 @@ void AMaryCharacter::BeginPlay()
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void AMaryCharacter::Interact()
+{
+	if(IsValid(HoveredCollectible))
+	{
+		
+	}
+}
 
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -96,7 +156,7 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
@@ -108,7 +168,7 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 void AMaryCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
@@ -117,13 +177,32 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
 		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	}
+}
+
+void AMaryCharacter::Jump()
+{
+	ChangeState(Stunned);
+}
+
+void AMaryCharacter::TickWalking(float DeltaSeconds)
+{
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
+
+	MovementVector = FVector2D::ZeroVector;
+}
+
+void AMaryCharacter::TickDashing(float DeltaSeconds)
+{
+}
+
+void AMaryCharacter::TickStunned(float DeltaSeconds)
+{
+	
 }
