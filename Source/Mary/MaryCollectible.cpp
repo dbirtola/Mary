@@ -2,6 +2,8 @@
 
 
 #include "MaryCollectible.h"
+
+#include "AbilitySystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 UStaticMesh* AMaryCollectible::DefaultGrownMesh = nullptr;
@@ -47,11 +49,61 @@ bool AMaryCollectible::CanPickup() const
 	switch (CollectibleState)
 	{
 	case FMaryCollectibleState::Grown:
-	case FMaryCollectibleState::Fallen:
+	case FMaryCollectibleState::Dropped:
 		return true;
 	default:
 		return false;
 	}
+}
+
+bool AMaryCollectible::TryPickup()
+{
+	if(CanPickup())
+	{
+		CollectibleState = FMaryCollectibleState::Held;
+		return true;
+	}
+	return false;
+}
+
+bool AMaryCollectible::CanUse() const
+{
+	if (CollectibleState == FMaryCollectibleState::Held && RemainingUses > 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool AMaryCollectible::TryUse(UAbilitySystemComponent* AbilitySystemComponent)
+{
+	if(RemainingUses > 1)
+	{
+		for(TSubclassOf<UGameplayAbility> const FlowerAbility : FlowerAbilities)
+		{
+			AbilitySystemComponent->TryActivateAbilityByClass(FlowerAbility, true);
+		}
+		--RemainingUses;
+		return true;
+	}
+	return false;
+}
+
+bool AMaryCollectible::TryDrop()
+{
+	if(CollectibleState == FMaryCollectibleState::Held)
+	{
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CollectibleState = FMaryCollectibleState::Dropped;
+		OnDrop();
+		return true;
+	}
+	return false;
+}
+
+void AMaryCollectible::OnDrop()
+{
+	SetActorLocation(GetActorLocation() - FVector(0,0,100));
 }
 
 bool AMaryCollectible::BloomFlower()

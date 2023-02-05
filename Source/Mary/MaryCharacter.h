@@ -88,7 +88,7 @@ protected:
 	TArray<AMaryCollectible*> HeldCollectibles;
 
 	UPROPERTY(BlueprintReadWrite)
-	AMaryCollectible* HoveredCollectible;
+	TArray<AMaryCollectible*> HoveredCollectibles;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -107,6 +107,7 @@ protected:
 	void StartStunned();
 	void TickStunned(float DeltaSeconds);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact();
 	
 	// APawn interface

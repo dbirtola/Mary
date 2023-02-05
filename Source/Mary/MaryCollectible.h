@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/GameplayAbility.h"
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -13,9 +14,8 @@ enum FMaryCollectibleState
 {
 	Growing = 0,
 	Grown = 1,
-	HeldReady = 2,
-	HeldUsed = 3,
-	Fallen = 4	
+	Held = 2,
+	Dropped = 3
 };
 
 UCLASS()
@@ -38,9 +38,13 @@ protected:
 	int PointValue = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Collectible")
-	int RemainingUses = 1;
+	int RemainingUses = 0;
 	
-public:	
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	TArray<TSubclassOf<UGameplayAbility>> FlowerAbilities;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -57,6 +61,20 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool CanPickup() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool TryPickup();
+
+	UFUNCTION(BlueprintCallable)
+	bool CanUse() const;
+	
+	UFUNCTION(BlueprintCallable)
+	bool TryUse(UAbilitySystemComponent* AbilitySystemComponent);
+
+	UFUNCTION(BlueprintCallable)
+	bool TryDrop();
+	
+	void OnDrop();
 
 	UFUNCTION(BlueprintCallable)
 	bool BloomFlower();

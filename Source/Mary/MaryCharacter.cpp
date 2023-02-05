@@ -144,11 +144,33 @@ void AMaryCharacter::BeginPlay()
 	}
 }
 
-void AMaryCharacter::Interact()
+void AMaryCharacter::Interact_Implementation()
 {
-	if(IsValid(HoveredCollectible))
+	if(HeldCollectibles.Num() == 0) //No held Item
 	{
-		
+		for(AMaryCollectible* HoveredCollectible : HoveredCollectibles) 
+		{
+			if(IsValid(HoveredCollectible) && HoveredCollectible->TryPickup())
+			{
+				HoveredCollectible->AttachToActor(this,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+				HeldCollectibles.Add(HoveredCollectible);
+				break;
+			}
+		}
+	}
+	else
+	{
+		for(AMaryCollectible* HeldCollectible : HeldCollectibles)
+		{
+			if(IsValid(HeldCollectible))
+			{
+				bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
+				if(!bUsed && HeldCollectible->TryDrop())
+				{
+					HeldCollectibles.Remove(HeldCollectible);
+				}
+			}
+		}
 	}
 }
 
@@ -165,7 +187,7 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Move);
 
 		//Interacting
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Interact);
+		//EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Interact);
 	}
 
 }
