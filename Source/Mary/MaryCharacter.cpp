@@ -113,7 +113,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = Controller->GetControlRotation();// + FRotator(0, 90, 0);
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector

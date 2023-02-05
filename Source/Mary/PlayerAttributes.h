@@ -22,10 +22,17 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Speed", ReplicatedUsing = OnRep_Speed)
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_Speed)
 	FGameplayAttributeData Speed;
 	ATTRIBUTE_ACCESSORS(UPlayerAttributes, Speed)
 
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_RotationDelta)
+	FGameplayAttributeData RotationDelta;
+	ATTRIBUTE_ACCESSORS(UPlayerAttributes, RotationDelta)
+
 	UFUNCTION()
 	virtual void OnRep_Speed(const FGameplayAttributeData& OldSpeed);
+
+	UFUNCTION()
+	virtual void OnRep_RotationDelta(const FGameplayAttributeData& OldDelta);
 };
