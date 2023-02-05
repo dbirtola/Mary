@@ -16,13 +16,13 @@ AMaryCollectible::AMaryCollectible()
 
 	if(DefaultGrownMesh == nullptr)
 	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Meshes/SM_Flower_Temp.SM_Flower_Temp"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Environment/Basic_Flower/prop_flower_sacs.prop_flower_sacs"));
 		DefaultGrownMesh = StaticAsset.Object;
 	}
 
 	if(GrowingMesh == nullptr)
 	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Meshes/SM_Sprout_Temp.SM_Sprout_Temp"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh>StaticAsset(TEXT("/Game/Environment/Sprout/prop_sprout.prop_sprout"));
 		GrowingMesh = StaticAsset.Object;
 	}
 	
@@ -103,7 +103,30 @@ bool AMaryCollectible::TryDrop()
 
 void AMaryCollectible::OnDrop()
 {
-	SetActorLocation(GetActorLocation() - FVector(0,0,100));
+	UWorld* World = GetWorld();
+
+	if(IsValid(World) == false)
+	{
+		return;
+	}
+
+	FVector DropLocation{};
+	
+	FHitResult OutHit;
+	FVector Start = GetActorLocation();
+	
+	
+	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_WorldStatic))
+	{
+		DropLocation = OutHit.Location;
+	}
+	else
+	{
+		DropLocation = GetActorLocation() - FVector(0,0,225);
+	}
+
+	SetActorLocation(DropLocation);
+	SetActorRotation(FRotator::ZeroRotator);
 }
 
 bool AMaryCollectible::BloomFlower()
