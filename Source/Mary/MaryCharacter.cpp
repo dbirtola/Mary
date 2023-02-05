@@ -11,13 +11,17 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerController.h"
-#include "Net/UnrealNetwork.h"
+#include "MaryPlayerState.h"
+#include "MaryCharacterMovementComponent.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 // AMaryCharacter
 
-AMaryCharacter::AMaryCharacter()
+AMaryCharacter::AMaryCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMaryCharacterMovementComponent>(TEXT("CharMoveComp")))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -43,65 +47,35 @@ AMaryCharacter::AMaryCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void AMaryCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+UAbilitySystemComponent* AMaryCharacter::GetAbilitySystemComponent() const
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AMaryCharacter, CurrentState);
+	if (AMaryPlayerState* MaryPS = GetPlayerState<AMaryPlayerState>())
+	{
+		return MaryPS->GetAbilitySystemComponent();
+	}
+	return nullptr;
 }
 
-void AMaryCharacter::Tick(float DeltaSeconds)
+void AMaryCharacter::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
 {
-	Super::Tick(DeltaSeconds);
-
-	if(CurrentState == Walking)
+	if (Tag == FGameplayTag::RequestGameplayTag("Effects.Daze"))
 	{
-		TickWalking(DeltaSeconds);
-	}
+		if (Stacks > 0)
+		{
+			GetCharacterMovement()->DisableMovement();
+		}
 
-	if(CurrentState == Dashing)
-	{
-		TickDashing(DeltaSeconds);
-	}
-
-	if(CurrentState == Stunned)
-	{
-		TickStunned(DeltaSeconds);
+		if (Stacks <= 0)
+		{
+			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		}
 	}
 }
-
-void AMaryCharacter::ChangeState(CharacterState NewState)
-{
-	if(GetLocalRole() != ROLE_AutonomousProxy)
-	{
-		return;
-	}
-	
-	if(CurrentState == NewState)
-	{
-		return;
-	}
-	CurrentState = NewState;
-	
-	
-	ServerChangeState(NewState);
-}
-
-void AMaryCharacter::OnRep_CurrentState()
-{
-	
-}
-
-void AMaryCharacter::ServerChangeState_Implementation(CharacterState NewState)
-{
-	CurrentState = NewState;
-}
-
 
 void AMaryCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	bReplicates = true;
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -116,21 +90,13 @@ void AMaryCharacter::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AMaryCharacter::Interact()
-{
-	if(IsValid(HoveredCollectible))
-	{
-		
-	}
-}
-
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
@@ -142,41 +108,22 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 void AMaryCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	MovementVector = Value.Get<FVector2D>();
+	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = Controller->GetControlRotation();// + FRotator(0, 90, 0);
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
 		// get right vector 
-		RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
 	}
-}
-
-void AMaryCharacter::Jump()
-{
-	ChangeState(Stunned);
-}
-
-void AMaryCharacter::TickWalking(float DeltaSeconds)
-{
-	// add movement 
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
-
-	MovementVector = FVector2D::ZeroVector;
-}
-
-void AMaryCharacter::TickDashing(float DeltaSeconds)
-{
-}
-
-void AMaryCharacter::TickStunned(float DeltaSeconds)
-{
-	
 }
