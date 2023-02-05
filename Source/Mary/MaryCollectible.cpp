@@ -103,7 +103,29 @@ bool AMaryCollectible::TryDrop()
 
 void AMaryCollectible::OnDrop()
 {
-	SetActorLocation(GetActorLocation() - FVector(0,0,100));
+	UWorld* World = GetWorld();
+
+	if(IsValid(World) == false)
+	{
+		return;
+	}
+
+	FVector DropLocation{};
+	
+	FHitResult OutHit;
+	FVector Start = GetActorLocation();
+	
+	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_WorldStatic))
+	{
+		DropLocation = OutHit.Location;
+	}
+	else
+	{
+		DropLocation = GetActorLocation() - FVector(0,0,225);
+	}
+
+	SetActorLocation(DropLocation);
+	SetActorRotation(FRotator::ZeroRotator);
 }
 
 bool AMaryCollectible::BloomFlower()
