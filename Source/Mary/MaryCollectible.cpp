@@ -114,9 +114,11 @@ void AMaryCollectible::OnDrop()
 	
 	FHitResult OutHit;
 	FVector Start = GetActorLocation();
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 	
 	
-	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_WorldStatic))
+	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_Vehicle, CollisionParams))
 	{
 		DropLocation = OutHit.Location;
 	}
