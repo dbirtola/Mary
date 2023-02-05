@@ -49,6 +49,10 @@ class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
+
 public:
 	AMaryCharacter(const FObjectInitializer& ObjectInitializer);
 	

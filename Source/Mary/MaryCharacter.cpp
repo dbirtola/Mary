@@ -158,11 +158,14 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Jump);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Move);
+
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Interact);
 	}
 
 }
@@ -176,7 +179,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
-
+		//const FRotator Rotation = GetActorRotation();
 		bool attributeSuccess;
 		const FRotator YawRotation(
 			0,
@@ -195,7 +198,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 
 void AMaryCharacter::Jump()
 {
-	ChangeState(Stunned);
+	//ChangeState(Stunned);
 }
 
 void AMaryCharacter::TickWalking(float DeltaSeconds)
