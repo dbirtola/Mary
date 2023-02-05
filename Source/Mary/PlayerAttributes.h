@@ -30,6 +30,10 @@ public:
 	FGameplayAttributeData RotationDelta;
 	ATTRIBUTE_ACCESSORS(UPlayerAttributes, RotationDelta)
 
+	// UPROPERTY(BlueprintReadOnly, Category = "GameState", ReplicatedUsing = OnRep_RotationDelta)
+	// FGameplayAttributeData InFountain;
+	// ATTRIBUTE_ACCESSORS(UPlayerAttributes, InFountain)
+
 	UFUNCTION()
 	virtual void OnRep_Speed(const FGameplayAttributeData& OldSpeed);
 
