@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
+#include "MaryCollectible.h"
 #include "MaryCharacter.generated.h"
 
 UENUM()
@@ -55,7 +58,7 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerChangeState(CharacterState NewState);
-
+	
 	UFUNCTION()
 	void OnRep_CurrentState();
 	
@@ -67,7 +70,17 @@ protected:
 
 	FVector2D MovementVector;
 
+	void PawnClientRestart() override;
+	
+	void PossessedBy(AController* NewController) override;
+
 	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AMaryCollectible*> HeldCollectibles;
+
+	UPROPERTY(BlueprintReadWrite)
+	AMaryCollectible* HoveredCollectible;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -85,9 +98,9 @@ protected:
 
 	void StartStunned();
 	void TickStunned(float DeltaSeconds);
-			
 
-protected:
+	void Interact();
+	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	

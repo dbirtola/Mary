@@ -116,6 +116,14 @@ void AMaryCharacter::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+void AMaryCharacter::Interact()
+{
+	if(IsValid(HoveredCollectible))
+	{
+		
+	}
+}
+
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
