@@ -93,8 +93,8 @@ bool AMaryCollectible::TryDrop()
 {
 	if(CollectibleState == FMaryCollectibleState::Held)
 	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		CollectibleState = FMaryCollectibleState::Dropped;
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		OnDrop();
 		return true;
 	}

@@ -84,11 +84,13 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	TArray<AMaryCollectible*> HeldCollectibles;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	TArray<AMaryCollectible*> HoveredCollectibles;
+	
+	static TSubclassOf<UGameplayAbility> DropAbility;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

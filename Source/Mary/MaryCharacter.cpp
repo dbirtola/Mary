@@ -19,6 +19,10 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/ConstructorHelpers.h"
+
+
+TSubclassOf<UGameplayAbility> AMaryCharacter::DropAbility = NULL;
 
 // AMaryCharacter
 
@@ -47,6 +51,12 @@ AMaryCharacter::AMaryCharacter(const FObjectInitializer& ObjectInitializer)
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	if(IsValid(DropAbility))
+	{
+		ConstructorHelpers::FObjectFinder<UGameplayAbility>StaticAsset(TEXT("/Game/Gameplay/Abilities/GA_DropFlower.GA_DropFlower"));
+		DropAbility = StaticAsset.Object->GetClass();
+	}
 }
 
 UAbilitySystemComponent* AMaryCharacter::GetAbilitySystemComponent() const
@@ -78,6 +88,8 @@ void AMaryCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMaryCharacter, CurrentState);
+	DOREPLIFETIME(AMaryCharacter, HeldCollectibles);
+	DOREPLIFETIME(AMaryCharacter, HoveredCollectibles);
 }
 
 void AMaryCharacter::Tick(float DeltaSeconds)
@@ -165,10 +177,13 @@ void AMaryCharacter::Interact_Implementation()
 			if(IsValid(HeldCollectible))
 			{
 				bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
-				if(!bUsed && HeldCollectible->TryDrop())
+				if(!bUsed)
 				{
+					HeldCollectible->TryDrop();
+					//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
 					HeldCollectibles.Remove(HeldCollectible);
 				}
+				break;
 			}
 		}
 	}
