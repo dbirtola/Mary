@@ -163,6 +163,9 @@ void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Move);
+
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AMaryCharacter::Interact);
 	}
 
 }
