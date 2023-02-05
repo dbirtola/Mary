@@ -115,6 +115,7 @@ void AMaryCollectible::OnDrop()
 	FHitResult OutHit;
 	FVector Start = GetActorLocation();
 	
+	
 	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_WorldStatic))
 	{
 		DropLocation = OutHit.Location;
