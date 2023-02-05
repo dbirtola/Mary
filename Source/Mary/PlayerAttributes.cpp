@@ -14,3 +14,8 @@ void UPlayerAttributes::OnRep_Speed(const FGameplayAttributeData& OldSpeed)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPlayerAttributes, Speed, OldSpeed);
 }
+
+void UPlayerAttributes::OnRep_RotationDelta(const FGameplayAttributeData& OldDelta)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPlayerAttributes, RotationDelta, OldDelta);
+}

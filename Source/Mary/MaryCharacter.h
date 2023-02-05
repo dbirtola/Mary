@@ -6,9 +6,19 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
+#include "MaryCollectible.h"
 #include "MaryCharacter.generated.h"
 
 class UAbilitySystemComponent;
+
+UENUM()
+enum CharacterState
+{
+	Walking,
+	Dashing,
+	Stunned
+};
 
 UCLASS(config = Game)
 class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
@@ -39,21 +49,66 @@ class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
+
 public:
 	AMaryCharacter(const FObjectInitializer& ObjectInitializer);
 	
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+
+	UFUNCTION()
+	void OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks);
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	
+	void ChangeState(CharacterState NewState);
+	CharacterState GetCharacterState() const { return CurrentState; }
+
 protected:
+
+	UFUNCTION(Server, Reliable)
+	void ServerChangeState(CharacterState NewState);
+	
+	UFUNCTION()
+	void OnRep_CurrentState();
+	
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentState, BlueprintReadOnly, Category="State")
+	TEnumAsByte<CharacterState> CurrentState;
+
+	FVector ForwardDirection;
+	FVector RightDirection;
+
+	FVector2D MovementVector;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AMaryCollectible*> HeldCollectibles;
+
+	UPROPERTY(BlueprintReadWrite)
+	AMaryCollectible* HoveredCollectible;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
 
-protected:
+	void Jump() override;
+
+	void Startwalking();
+	void TickWalking(float DeltaSeconds);
+
+	void StartDashing();
+	void TickDashing(float DeltaSeconds);
+
+	void StartStunned();
+	void TickStunned(float DeltaSeconds);
+
+	void Interact();
+	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -67,5 +122,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
 };
 
