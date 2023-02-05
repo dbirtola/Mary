@@ -4,10 +4,20 @@
 #include "Net/UnrealNetwork.h"
 #include "AbilitySystemComponent.h"
 #include "PlayerStats.h"
+#include "MaryCharacter.h"
 
 AMaryPlayerState::AMaryPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	FOnPlayerStatePawnSet::FDelegate Delegate;
+	Delegate.BindUFunction(this, FName("PawnSet"));
+	OnPawnSet.Add(Delegate);
+}
+
+void AMaryPlayerState::PawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
+{
+	AbilitySystemComponent->SetAvatarActor(NewPawn);
 }
 
 void AMaryPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -66,4 +76,19 @@ float AMaryPlayerState::GetStat(FGameplayTag StatTag) const
 {
 	const FPlayerStat* Stat = Stats.FindByPredicate([StatTag](const FPlayerStat& ExistingStat) { return ExistingStat.Tag == StatTag; });
 	return Stat ? Stat->Value : 0.0f;
+}
+
+void AMaryPlayerState::OnTagNewOrRemoved(const FGameplayTag Tag, int32 Stacks)
+{
+	if (AMaryCharacter* Character = Cast<AMaryCharacter>(GetPawn()))
+	{
+		Character->OnTagNewOrRemoved(Tag, Stacks);
+	}
+}
+
+void AMaryPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effects.Daze")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AMaryPlayerState::OnTagNewOrRemoved);
 }
