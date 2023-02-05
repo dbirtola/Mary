@@ -220,7 +220,7 @@ void AMaryCharacter::Move(const FInputActionValue& Value)
 		bool attributeSuccess;
 		const FRotator YawRotation(
 			0,
-			Rotation.Yaw + 90 + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess),
+			Rotation.Yaw + GetAbilitySystemComponent()->GetGameplayAttributeValue(UPlayerAttributes::GetRotationDeltaAttribute(), attributeSuccess),
 			0
 			);
 
