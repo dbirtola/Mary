@@ -195,17 +195,24 @@ void AMaryCharacter::Interact_Implementation()
 						}
 					}
 				}
-
-				//bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
-				//if(!bUsed)
-				//{
-				//
-				//}
 				break;
 			}
 		}
 	}
 }
+
+void AMaryCharacter::Use_Implementation()
+{
+	for(AMaryCollectible* HeldCollectible : HeldCollectibles)
+	{
+		bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
+		if(!bUsed)
+		{
+	
+		}
+	}
+}
+
 
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
