@@ -53,6 +53,10 @@ class AMaryCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* InteractAction;
 
+	/** Use Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* UseAction;
+
 public:
 	AMaryCharacter(const FObjectInitializer& ObjectInitializer);
 	
@@ -114,6 +118,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Use();
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
