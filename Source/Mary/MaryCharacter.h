@@ -121,6 +121,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Use();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDrop();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPointGiven();
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

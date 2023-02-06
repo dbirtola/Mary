@@ -180,6 +180,7 @@ void AMaryCharacter::Interact_Implementation()
 				HeldCollectible->TryDrop();
 				//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
 				HeldCollectibles.Remove(HeldCollectible);
+				OnDrop();
 
 				if (GetAbilitySystemComponent())
 				{
@@ -192,6 +193,7 @@ void AMaryCharacter::Interact_Implementation()
 							{
 								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stats.Points")), HeldCollectible->GetPointValue());
 								HeldCollectible->OnPointsGranted();
+								OnPointGiven();
 							}
 						}
 					}
