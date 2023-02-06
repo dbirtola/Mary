@@ -177,18 +177,42 @@ void AMaryCharacter::Interact_Implementation()
 		{
 			if(IsValid(HeldCollectible))
 			{
-				bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
-				if(!bUsed)
+				HeldCollectible->TryDrop();
+				//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
+				HeldCollectibles.Remove(HeldCollectible);
+
+				if (GetAbilitySystemComponent())
 				{
-					HeldCollectible->TryDrop();
-					//GetAbilitySystemComponent()->TryActivateAbilityByClass(DropAbility);
-					HeldCollectibles.Remove(HeldCollectible);
+					if (GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Effects.InFountain"))))
+					{
+
+						if (HasAuthority())
+						{
+							if (AMaryPlayerState* MaryPlayerState = GetPlayerState<AMaryPlayerState>())
+							{
+								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stat.Points")), 1.0f);
+							}
+						}
+					}
 				}
 				break;
 			}
 		}
 	}
 }
+
+void AMaryCharacter::Use_Implementation()
+{
+	for(AMaryCollectible* HeldCollectible : HeldCollectibles)
+	{
+		bool bUsed = HeldCollectible->TryUse(GetAbilitySystemComponent());
+		if(!bUsed)
+		{
+	
+		}
+	}
+}
+
 
 void AMaryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {

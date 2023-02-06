@@ -4,6 +4,7 @@
 #include "MaryCollectible.h"
 
 #include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 UStaticMesh* AMaryCollectible::DefaultGrownMesh = nullptr;
@@ -114,9 +115,11 @@ void AMaryCollectible::OnDrop()
 	
 	FHitResult OutHit;
 	FVector Start = GetActorLocation();
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 	
 	
-	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_WorldStatic))
+	if(World->LineTraceSingleByChannel(OutHit, Start, Start - FVector(0, 0, 1000), ECC_Vehicle, CollisionParams))
 	{
 		DropLocation = OutHit.Location;
 	}
@@ -148,5 +151,14 @@ bool AMaryCollectible::BloomFlower()
 		return false;
 	}
 	return true;
+}
+
+void AMaryCollectible::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMaryCollectible, CollectibleState);
+	DOREPLIFETIME(AMaryCollectible, PointValue);
+	DOREPLIFETIME(AMaryCollectible, RemainingUses);
 }
 
