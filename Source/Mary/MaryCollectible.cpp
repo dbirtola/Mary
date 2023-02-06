@@ -153,6 +153,16 @@ bool AMaryCollectible::BloomFlower()
 	return true;
 }
 
+void AMaryCollectible::OnPointsGranted()
+{
+	CollectibleState = FMaryCollectibleState::Scored;
+}
+
+float AMaryCollectible::GetPointValue() const
+{
+	return PointValue;
+}
+
 void AMaryCollectible::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

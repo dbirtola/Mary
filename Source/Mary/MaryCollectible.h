@@ -15,7 +15,8 @@ enum FMaryCollectibleState
 	Growing = 0,
 	Grown = 1,
 	Held = 2,
-	Dropped = 3
+	Dropped = 3,
+	Scored // a player has already used this to get points for it
 };
 
 UCLASS()
@@ -78,6 +79,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool BloomFlower();
+
+	UFUNCTION(BlueprintCallable)
+	void OnPointsGranted();
+
+	float GetPointValue() const;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

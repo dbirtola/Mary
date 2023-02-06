@@ -190,7 +190,8 @@ void AMaryCharacter::Interact_Implementation()
 						{
 							if (AMaryPlayerState* MaryPlayerState = GetPlayerState<AMaryPlayerState>())
 							{
-								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stat.Points")), 1.0f);
+								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stats.Points")), HeldCollectible->GetPointValue());
+								HeldCollectible->OnPointsGranted();
 							}
 						}
 					}
