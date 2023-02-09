@@ -134,22 +134,16 @@ void AMaryCollectible::OnDrop()
 
 bool AMaryCollectible::BloomFlower()
 {
-	switch (CollectibleState)
+
+	if(GrownMesh != nullptr)
 	{
-	case FMaryCollectibleState::Growing:
-		if(GrownMesh != nullptr)
-		{
-			CollectibleMesh->SetStaticMesh(GrownMesh);
-		}
-		else
-		{
-			CollectibleMesh->SetStaticMesh(DefaultGrownMesh);
-		}
-		CollectibleState = FMaryCollectibleState::Grown;
-		return true;
-	default:
-		return false;
+		CollectibleMesh->SetStaticMesh(GrownMesh);
 	}
+	else
+	{
+		CollectibleMesh->SetStaticMesh(DefaultGrownMesh);
+	}
+	CollectibleState = FMaryCollectibleState::Grown;
 	return true;
 }
 
