@@ -193,9 +193,10 @@ void AMaryCharacter::Interact_Implementation()
 							{
 								MaryPlayerState->AddPlayerStat(FGameplayTag::RequestGameplayTag(FName("Stats.Points")), HeldCollectible->GetPointValue());
 								HeldCollectible->OnPointsGranted();
-								OnPointGiven();
 							}
 						}
+
+						OnPointGiven();
 					}
 				}
 				break;
