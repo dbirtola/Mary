@@ -23,7 +23,19 @@ void UMaryCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevel
 
 	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()))
 	{
-		float MoveSpeed = ASC->GetNumericAttribute(UPlayerAttributes::GetSpeedAttribute());
-		MaxWalkSpeed = MoveSpeed;
+		// float MoveSpeed = ASC->GetNumericAttribute(UPlayerAttributes::GetSpeedAttribute());
+		// MaxWalkSpeed = MoveSpeed;
 	}
+}
+
+float UMaryCharacterMovementComponent::GetMaxSpeed() const
+{
+	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner());
+	return Super::GetMaxSpeed() * (ASC ? ASC->GetNumericAttribute(UPlayerAttributes::GetSpeedAttribute()) : 1.0f);
+}
+
+float UMaryCharacterMovementComponent::GetMinAnalogSpeed() const
+{
+	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner());
+	return Super::GetMinAnalogSpeed() * (ASC ? ASC->GetNumericAttribute(UPlayerAttributes::GetSpeedAttribute()) : 1.0f);
 }

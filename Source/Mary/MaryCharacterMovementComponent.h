@@ -23,4 +23,8 @@ public:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual float GetMaxSpeed() const override;
+	
+	virtual float GetMinAnalogSpeed() const override;
+
 };
